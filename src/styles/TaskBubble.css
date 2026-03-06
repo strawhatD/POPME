@@ -1,0 +1,355 @@
+.task-bubble-wrapper {
+  width: 100%;
+}
+
+.task-bubble {
+  width: 100%;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 140px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.task-bubble:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.task-bubble.expanded {
+  border-radius: 12px;
+  aspect-ratio: auto;
+  min-height: auto;
+  padding: 20px;
+  animation: expandAnimation 0.3s ease forwards;
+}
+
+@keyframes expandAnimation {
+  from {
+    border-radius: 50%;
+  }
+  to {
+    border-radius: 12px;
+  }
+}
+
+/* Bubble Content - Collapsed */
+.bubble-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  width: 100%;
+}
+
+.bubble-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.8);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bubble-due-date {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+}
+
+.bubble-progress {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 500;
+}
+
+/* Bubble Expanded State */
+.bubble-expanded {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expanded-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.expanded-header h3 {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.8);
+  word-break: break-word;
+}
+
+.expanded-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+}
+
+.btn-icon.delete:hover {
+  background: rgba(255, 0, 0, 0.3);
+}
+
+.expanded-due-date {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0;
+  font-weight: 500;
+}
+
+.priority-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+/* Subtasks Section */
+.subtasks-section {
+  margin-top: 8px;
+}
+
+.subtasks-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 8px;
+}
+
+.no-subtasks {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 0 0 8px 0;
+  font-style: italic;
+}
+
+.subtasks-list {
+  list-style: none;
+  space: 0;
+  margin-bottom: 12px;
+}
+
+.subtask-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.subtask-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.subtask-item span {
+  flex: 1;
+  word-break: break-word;
+}
+
+.subtask-item.completed span {
+  text-decoration: line-through;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.add-subtask-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.subtask-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  font-size: 13px;
+  transition: border-color 0.2s ease;
+}
+
+.subtask-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn-add-subtask {
+  padding: 8px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.btn-add-subtask:hover {
+  background: #764ba2;
+  transform: scale(1.05);
+}
+
+/* Edit Mode */
+.bubble-edit {
+  width: 100%;
+}
+
+.bubble-edit h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+  text-transform: uppercase;
+}
+
+.edit-input,
+.edit-select {
+  padding: 8px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.edit-input:focus,
+.edit-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #764ba2;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .task-bubble {
+    border-radius: 50%;
+    aspect-ratio: 1;
+  }
+
+  .bubble-title {
+    font-size: 12px;
+  }
+
+  .bubble-due-date {
+    font-size: 10px;
+  }
+
+  .expanded-header h3 {
+    font-size: 16px;
+  }
+}

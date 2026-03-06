@@ -1,0 +1,231 @@
+.task-input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 20px;
+}
+
+.task-input-bubble {
+  margin: 0 auto;
+  width: 200px;
+  height: 100px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 200px 200px 0 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 -4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.task-input-bubble:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 -6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.bubble-text {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 101;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.task-input-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.task-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.task-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.task-input::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.preview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preview-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+  text-transform: uppercase;
+}
+
+.preview-bubble {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  min-height: 120px;
+  background: rgba(102, 126, 234, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.empty-preview {
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.btn-cancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.btn-submit {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .task-input-container {
+    padding: 12px;
+  }
+
+  .task-input,
+  .btn-options {
+    padding: 10px 12px;
+  }
+
+  .btn-submit {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .priority-options {
+    flex-direction: column;
+  }
+
+  .priority-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
