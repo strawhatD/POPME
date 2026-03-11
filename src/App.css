@@ -21,3 +21,9 @@
   }
 }
 
+/* floating bubbles container reserves space below input bubble */
+.floating-container {
+  /* keep bubbles above the input area by default */
+  padding-bottom: 180px; /* fallback value, updated dynamically in JS */
+}
+

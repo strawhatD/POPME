@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect } from 'react'
+import { useState, useReducer, useEffect, useRef } from 'react'
 import FloatingBubble from './components/FloatingBubble'
 import EditMode from './components/EditMode'
 import HistoryScreen from './components/HistoryScreen'
@@ -74,21 +74,48 @@ function App() {
   const [newTaskInput, setNewTaskInput] = useState('')
   const [isInputActive, setIsInputActive] = useState(false)
   const [bubblePhysics, setBubblePhysics] = useState<Record<string, { x: number; y: number; vx: number; vy: number }>>({})
+  const floatingContainerRef = useRef<HTMLDivElement>(null)
 
   const activeTasks = tasks.filter((t) => !t.completed)
   const completedTasks = tasks.filter((t) => t.completed)
+
+  // track cursor position relative to container center for avoidance behavior
+  const [cursorPos, setCursorPos] = useState<{x:number,y:number}|null>(null)
   const editingTask = tasks.find((t) => t.id === editingTaskId)
 
   // Initialize physics for new tasks and run collision detection
   useEffect(() => {
-    // Initialize physics for any new tasks
+    // Initialize physics for any new tasks; try to place them above the input line
     activeTasks.forEach((task) => {
       if (!bubblePhysics[task.id]) {
+        const containerRect = floatingContainerRef.current?.getBoundingClientRect()
+        const inputRect = document.getElementById('task-input-container')?.getBoundingClientRect()
+        const containerHeight = containerRect?.height || window.innerHeight || 600
+        const containerCenter = containerHeight / 2
+
+        // compute line where input top sits relative to container center
+        let lineY = containerCenter
+        if (containerRect && inputRect) {
+          const inputTopOffset = inputRect.top - containerRect.top
+          lineY = inputTopOffset - containerCenter
+        }
+
+        const radius = 60 / 2
+        const x = Math.random() * 300 - 150
+        // generate random y in a range avoiding the bottom line
+        let y = Math.random() * containerHeight - containerCenter
+        // account for hover scaling (≈1.1) and add a small buffer
+        const hoverScale = 1.1
+        const margin = radius * (hoverScale - 1) + 4
+        if (y + radius + margin > lineY) {
+          y = lineY - radius - margin
+        }
+
         setBubblePhysics((prev) => ({
           ...prev,
           [task.id]: {
-            x: Math.random() * 300 - 150,
-            y: Math.random() * 300 - 150,
+            x,
+            y,
             vx: (Math.random() - 0.5) * 0.8,
             vy: (Math.random() - 0.5) * 0.8,
           },
@@ -105,6 +132,19 @@ function App() {
       setBubblePhysics((prevPhysics) => {
         const newPhysics = { ...prevPhysics }
 
+        // measure container and input boundaries once per frame
+        const containerRect = floatingContainerRef.current?.getBoundingClientRect()
+        const inputRect = document.getElementById('task-input-container')?.getBoundingClientRect()
+        const containerHeight = containerRect?.height || window.innerHeight || 600
+        const containerCenter = containerHeight / 2
+
+        // compute lineY relative to container center where input top lies
+        let lineY = containerCenter
+        if (containerRect && inputRect) {
+          const inputTopOffset = inputRect.top - containerRect.top
+          lineY = inputTopOffset - containerCenter
+        }
+
         activeTasks.forEach((task) => {
           const physics = newPhysics[task.id]
           if (!physics) return
@@ -115,12 +155,25 @@ function App() {
 
           let { x, y, vx, vy } = physics
           const padding = 40
-          const height = 600 // approximate viewport height
+          const height = containerHeight
           const constraintFactor = importance / 10
           const maxRoamDistance = 300 * (1 - constraintFactor * 0.7)
 
           // Apply gentle gravity for floating
           vy += 0.02
+
+          // apply cursor avoidance if available
+          // if (cursorPos) {
+          //   const dxC = x - cursorPos.x
+          //   const dyC = y - cursorPos.y
+          //   const distC = Math.sqrt(dxC*dxC + dyC*dyC)
+          //   const avoidRadius = 100
+          //   if (distC < avoidRadius && distC > 0) {
+          //     const force = (avoidRadius - distC) * 0.02
+          //     vx += (dxC/distC) * force
+          //     vy += (dyC/distC) * force
+          //   }
+          // }
 
           // Update position
           x += vx
@@ -146,35 +199,51 @@ function App() {
             y = -height / 2 + radius + padding
             vy = Math.abs(vy) * 0.3
           }
-          // Keep bubbles away from bottom input area (reserve ~150px)
-          const bottomExclusionZone = 150
-          if (y + radius > height / 2 - bottomExclusionZone) {
-            y = height / 2 - radius - bottomExclusionZone
+
+          // enforce hard bottom line with buffer taking hover scale into account
+          const hoverScale = 1.1
+          const margin = radius * (hoverScale - 1) + 4
+          if (y + radius + margin > lineY) {
+            y = lineY - radius - margin
             vy = -Math.abs(vy) * 0.3
           }
 
-          // Collision detection with other bubbles (soft repulsion)
+          // Collision detection with other bubbles (soft repulsion and hard separation)
           activeTasks.forEach((otherTask) => {
             if (task.id === otherTask.id) return
 
-            const otherPhysics = prevPhysics[otherTask.id]
+            const otherPhysics = newPhysics[otherTask.id] || prevPhysics[otherTask.id]
             if (!otherPhysics) return
 
             const otherImportance = otherTask.importance || (otherTask.priority === 'high' ? 8 : otherTask.priority === 'medium' ? 5 : 2)
             const otherBubbleSize = 60 + otherImportance * 8
             const otherRadius = otherBubbleSize / 2
 
-            const dx = otherPhysics.x - x
-            const dy = otherPhysics.y - y
-            const distance = Math.sqrt(dx * dx + dy * dy)
-            const minDistance = radius + otherRadius + 20 // 20px minimum gap
+            let dx = otherPhysics.x - x
+            let dy = otherPhysics.y - y
+            let distance = Math.sqrt(dx * dx + dy * dy)
+            if (distance < 0.01) distance = 0.01
+            const minDistance = radius + otherRadius + 40 // larger gap
 
-            if (distance < minDistance && distance > 0) {
-              // Apply soft repulsion force for gentle separation
-              const angle = Math.atan2(dy, dx)
-              const repulsionForce = (minDistance - distance) * 0.03
-              vx -= Math.cos(angle) * repulsionForce
-              vy -= Math.sin(angle) * repulsionForce
+            if (distance < minDistance) {
+              // immediate positional correction
+              const overlap = minDistance - distance
+              const nx = dx / distance
+              const ny = dy / distance
+
+              // push this bubble away
+              x -= nx * (overlap / 2)
+              y -= ny * (overlap / 2)
+              // and the other one as well so they never sit on top of each other
+              otherPhysics.x += nx * (overlap / 2)
+              otherPhysics.y += ny * (overlap / 2)
+
+              // apply a stronger repulsion velocity
+              const repulsionForce = overlap * 0.05
+              vx -= nx * repulsionForce
+              vy -= ny * repulsionForce
+              otherPhysics.vx += nx * repulsionForce
+              otherPhysics.vy += ny * repulsionForce
             }
           })
 
@@ -272,7 +341,20 @@ function App() {
       </div>
 
       {/* Floating Bubbles */}
-      <div className="absolute inset-0 top-20">
+      <div
+        ref={floatingContainerRef}
+        className="floating-container absolute inset-0 top-20"
+        style={{ paddingBottom: 200 }}
+        onMouseMove={(e) => {
+          const rect = floatingContainerRef.current?.getBoundingClientRect()
+          if (rect) {
+            const x = e.clientX - rect.left - rect.width/2
+            const y = e.clientY - rect.top - rect.height/2
+            setCursorPos({x,y})
+          }
+        }}
+        // onMouseLeave={() => setCursorPos(null)}
+      >
         {activeTasks.map((task) => (
           <FloatingBubble
             key={task.id}
@@ -295,7 +377,7 @@ function App() {
       )}
 
       {/* Add Task Input - Half Bubble */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 flex justify-center pb-6 font-rounded">
+      <div id="task-input-container" className="fixed bottom-0 left-0 right-0 z-20 flex justify-center pb-6 font-rounded">
         {!isInputActive ? (
           <button
             onClick={() => setIsInputActive(true)}

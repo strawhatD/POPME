@@ -119,6 +119,13 @@ export default function FloatingBubble({ task, onEdit, onDelete, physics }: Floa
         width: bubbleSize,
         height: bubbleSize,
         opacity: opacity,
+        // bubbling stacking: near‑top bubbles should appear above lower ones, but keep
+        // all bubbles beneath the input component (z-index 20).
+        // compute a small range and clamp it so we never exceed 10.
+        zIndex: (() => {
+          const raw = Math.round(100 - physics.y)
+          return Math.max(1, Math.min(10, raw))
+        })(),
       }}
       onMouseEnter={handleMouseEnter}
       // onMouseLeave already handles cancelPress
